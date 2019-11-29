@@ -173,3 +173,127 @@ Now we are going to learn how to build and run our projects with Cargo. These co
 * `cargo build --release` - this command cpmpile your code with otimizations, and creates a binary in *target/release/hello_cargo*
 
 Congratulations, the information provided here refer to the Chapter 1 of the official Rust documentation. The next lesson will cover the Rust syntax more in deepth.
+
+## Getting your hands dirty
+
+This will be your first Rust project so get focused and pay attention to the fundamental concepts that gonna be provided. 
+
+The ideia is to program a guessing game. The software generates some random number and ask the player to enter a guess.
+
+#### Setting up the env
+
+We will create a new project using __Cargo__ called *guessing_game* and then jump into the new directory created.
+
+```bash
+> cargo new guessing_game
+> cd guessing_game
+```
+
+This new directory contains a `Cargo.toml` file and a `main.rs` program in the *src/* folder. Start by checking how the `TOML` file looks like and then compile the `Hello World` using the `run` parameter.
+
+#### Coding our first Rust game
+
+In the same `main.rs` file, delete every line before writting the code below:
+
+```rust
+use std::io;
+
+fn main() {
+    println!("Welcome to the Olympics Games of guessing!");
+
+    println!("Provide your guess (integer numbers only):");
+
+    let mut guess = String::new();
+
+    io::stdin().read_line(&mut guess)
+        .expect("Failed to read line");
+
+    println!("Your guess was: {}", guess);
+}
+```
+
+Now let's cut this little program in pieces.
+
+In order to work with input and output stream we import the `io` module which comes from the standart library `std`. 
+
+Then we declare our function `main`.
+
+Inside our function there are a few `println!` macros that prints a String to the screen.
+
+And here is a novelty, the `let` keyword is used when we create variables in Rust. If you read the docs you will learn that by default variables in Rust are immutable.
+
+But if we are not very confident and prefer that our variable could be mutable? Here the keyword `mut` comes in handy.
+
+After these keywords we must inform the name of our variable so we can refer to this memory block along our program. I decided to let the name of the variable as `guess`.
+
+The `=` sign is used for value assignment, and our `guess` variable has the `String::new()` bound to it, a function that returns a new, empty String.
+
+To summarize, the `let mut guess = String::new();` line has created a mutable variable that is currently bound to a new, empty instance of a String. Whew!
+
+The `io` module stores a lot of functions and `stdin()` is one of them. So becomes like this `io::stdin()`, but if we do not have explicit declared `use std::io`, we could simple call the `stdin()` function like that:
+
+```rust
+std::io::stdin().read_line(&mut guess)
+    .expect("Failed to read line");
+```
+
+The `stdin()` function returns an instance of `std::io::Stdin`, which is a type that represents a handle to the standard input for your terminal.
+
+And a layer below of the `stdin()` function we have the `read_line` __method__, useful to get the user input. And we can notice that we've passed an argument to it: `&mut guess`;
+
+The job of `read_line` is to take whatever the user types into standard input and place that into a string, so it takes that string as an argument. The string argument needs to be mutable so the method can change the string’s content by adding the user input.
+
+The `&` indicates that the `&mut guess` argument is a reference, which gives you a way to let multiple parts of your code access one piece of data without needing to copy that data into memory multiple times. References are a complex feature, and one of Rust’s major advantages is how safe and easy it is to use references. 
+
+Never forget that like variables, references are immutable by default. 
+
+This line of Rust code was break into two separated lines: that's because it’s often wise to introduce a newline and other whitespace to help break up long lines. We have called two methods, so we organized our code to be more readable.
+
+```rust
+io::stdin().read_line(&mut guess).expect("Failed to read line"); 
+//every time you do this a web server downs
+```
+
+```rust
+io::stdin().read_line(&mut guess)
+    .expect("Failed to read line"); 
+//sooooo better
+```
+
+Now focus, you have to know that `read_line` method returns a value, a *enum*, the `io::Result`. This value have his variants, they can be or `Ok` or `Err`. 
+
+The `Ok` variant indicates the operation was successful, and inside `Ok` is the successfully generated value. The `Err` variant means the operation failed, and `Err` contains information about how or why the operation failed.
+
+The purpose of these `Result` types is to encode error-handling information. Values of the `Result` type, like values of any type, have methods defined on them.
+
+ An instance of `io::Result` has an `expect()` method that you can call. 
+ 
+ If this instance is an `Err` value, `expect()` will cause the program to crash and display the message that you passed as an argument to `expect()`. If the read_line method returns an `Err`, it would likely be the result of an error coming from the underlying operating system.
+ 
+ If this instance is an `Ok` value, `expect()` will take the return value that `Ok` is holding and return just that value to you so you can use it. In this case, that value is the number of bytes in what the user entered into standard input.
+
+If you don’t call expect, the program will compile, but you’ll get a warning similar to this: 
+
+```bash
+$ cargo build
+   Compiling guessing_game v0.1.0 (file:///projects/guessing_game)
+warning: unused `std::result::Result` which must be used
+  --> src/main.rs:10:5
+   |
+10 |     io::stdin().read_line(&mut guess);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: #[warn(unused_must_use)] on by default
+```
+
+Rust warns that you haven’t used the `Result` value returned from `read_line`, indicating that the program hasn’t handled a possible error.
+
+The right way to suppress the warning is to actually write error handling, but because you just want to crash this program when a problem occurs, you can use `expect()`. You’ll learn about recovering from errors as far you keep studying.
+
+And our `println!` macros are doing something new too. We've passed the curly brackets `{}` indicating a __placeholder__. For each placeholder you have to list the variable or value that it is holding.
+
+Use `cargo run` to compile and run the first part of our guessing game.
+
+### Generating random numbers
+
+Soon!
