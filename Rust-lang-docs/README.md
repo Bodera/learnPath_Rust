@@ -3,7 +3,7 @@ This will be another README with thousands of lines. I won't break it in series.
 
 __Note__: All code here was tested in a Linux environment running Debian distro in his stable version. 
 
-#### Installation
+## Installation
 * For installing `rustup` tool on Linux or macOS for the latest stable version of Rust
 ```bash
 > curl https://sh.rustup.rs -sSf | sh
@@ -28,7 +28,7 @@ Now it is time to check our Rust version and confirm that we are ready to go. Op
 > rustc --version
 ```
 
-#### How to: update or uninstall Rust
+## How to: update or uninstall Rust
 Directly from your terminal, type `rustup update`. And that is all, if a new version is available the rustup tool will fork it to your machine.
 
 Now if for some reason you need to uninstall Rust, just type in the terminal `rustup self uninstall`.
@@ -102,7 +102,7 @@ So for smaller programs, `rustc` is fine. But you are not a smaller person (if y
 > cargo --version
 ```
 
-#### Creating Rust projects with Cargo
+### Creating Rust projects with Cargo
 
 Hi, in this section you will learn how manage Rust projects using the Cargo build system.
 
@@ -174,13 +174,13 @@ Now we are going to learn how to build and run our projects with Cargo. These co
 
 Congratulations, the information provided here refer to the Chapter 1 of the official Rust documentation. The next lesson will cover the Rust syntax more in deepth.
 
-## Getting your hands dirty
+#### Getting your hands dirty
 
 This will be your first Rust project so get focused and pay attention to the fundamental concepts that gonna be provided. 
 
 The ideia is to program a guessing game. The software generates some random number and ask the player to enter a guess.
 
-#### Setting up the env
+### Setting up the env
 
 We will create a new project using __Cargo__ called *guessing_game* and then jump into the new directory created.
 
@@ -191,7 +191,7 @@ We will create a new project using __Cargo__ called *guessing_game* and then jum
 
 This new directory contains a `Cargo.toml` file and a `main.rs` program in the *src/* folder. Start by checking how the `TOML` file looks like and then compile the `Hello World` using the `run` parameter.
 
-#### Coding our first Rust game
+### Coding our first Rust game
 
 In the same `main.rs` file, delete every line before writting the code below:
 
@@ -292,8 +292,246 @@ The right way to suppress the warning is to actually write error handling, but b
 
 And our `println!` macros are doing something new too. We've passed the curly brackets `{}` indicating a __placeholder__. For each placeholder you have to list the variable or value that it is holding.
 
+```rust
+#![allow(unused_variables)]
+fn main() {
+    let x = 5;
+    let y = 10;
+
+    println!("x = {} and y = {}", x, y);
+}
+```
+
+Guess what the code above will print. Piece of cake it isn't?
+
 Use `cargo run` to compile and run the first part of our guessing game.
 
-### Generating random numbers
+#### Generating random numbers
+
+In order for our game to fulfill it's commitment, we need to secretly generate the number that the user will try to guess. Let's say that this number should be between 1 and 199, and has to be different every time the game is executed. Rust standart library does not has random functionality, but we can use [the *rand* crate](https://crates.io/crates/rand).
+
+#### Using Crates to get more power
+
+We already studied that crates are a collection of Rust source code files. So far we've been building a *binary crate*, which means that is an executable. The `rand` crate on other hand is a *library crate*, storing code intended to be used in other programs. Okay enough it's enough, let's open the `Cargo.toml` and add a dependency to our Guessing Game project and build it by running `cargo build`.
+
+```toml
+[dependencies]
+rand = "^0.7.3"
+```
+
+Cargo understands [semantic versioning](https://devhints.io/semver). The range declared to the `rand` crate version that our project supports is between is `>=0.7.3` and `<1.0.0`.
+
+```bash
+$ cargo build
+    Updating crates.io index
+  Downloaded rand v0.7.3
+  Downloaded getrandom v0.1.14
+  Downloaded rand_core v0.5.1
+  Downloaded rand_chacha v0.2.1
+  Downloaded libc v0.2.66
+  Downloaded c2-chacha v0.2.3
+  Downloaded cfg-if v0.1.10
+  Downloaded ppv-lite86 v0.2.6
+   Compiling libc v0.2.66
+   Compiling getrandom v0.1.14
+   Compiling cfg-if v0.1.10
+   Compiling ppv-lite86 v0.2.6
+   Compiling c2-chacha v0.2.3
+   Compiling rand_core v0.5.1
+   Compiling rand_chacha v0.2.1
+   Compiling rand v0.7.3
+   Compiling guessing_game v0.1.0 (/learnPath_Rust/Rust-lang-docs/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 26.40s
+```
+
+Notice that when we have external dependencies Cargo fetches the latest version from a registry, which is a copy of data from [Crates.io](https://crates.io/), a Rust ecosystem place where people from all around the world post their open source Rust crates.
+
+To upate crates dependencies just run `cargo update` for minor patch updates, major patches will have to be explicitly declared in *Cargo.toml*. 
+
+Before moving on, let's talk about the `Cargo.lock` file. When you build a project for the first time, Cargo figures out all the versions of the dependencies that fit the criteria and then writes them to the Cargo.lock file. When you build your project in the future, Cargo will see that the `Cargo.lock` file exists and use the versions specified there rather than doing all the work of figuring out versions again. This lets you have a reproducible build automatically. 
+
+#### Generating a random number
+
+```rust
+use std::io;
+use rand::Rng;
+
+fn main() {
+    println!("Welcome to the Olympics Games of guessing!");
+
+    let secret = rand::thread_rng().gen_range(1, 200);
+
+    println!("The secret generated was: {}", secret);
+
+    println!("Provide your guess (integer numbers only):");
+
+    let mut guess = String::new();
+
+    io::stdin().read_line(&mut guess)
+        .expect("Failed to read line");
+
+    println!("Your guess was: {}", guess);
+}
+```
+
+The second line now has `use rand::Rng`, `Rng` trait defines methods that random number generators implement, and this trait must be in scope for us to use those methods. Trits are a language feature that tells the Rust compiler about functionality a type must provide, but we will study this more in the future.
+
+The `rand::thread_rng` function will give us the particular random number generator that we’re going to use: one that is local to the current thread of execution and seeded by the operating system. Then we call the `gen_range method` on the random number generator. This method is defined by the `Rng` trait that we brought into scope with the `use rand::Rng` statement. The `gen_range` method takes two numbers as arguments and generates a random number between them. It’s inclusive on the lower bound but exclusive on the upper bound, so we need to specify 1 and 200 to request a number between 1 and 199.
+
+You won’t just know which traits to use and which methods and functions to call from a crate. Instructions for using a crate are in each crate’s documentation. Run `cargo doc --open` command to build documentation provided by all of your dependencies locally and open it in your browser (also generate a `index.html` file on your project). 
+
+And so on we are printing our secret number for debugging purposes, this line will not be present on final version of the game. Try running this program a few times and you shoul get random numbers between 1 and 199.
+
+#### Comparing the guess to the secret
+
+```rust
+use std::io;
+use std::cmp::Ordering;
+use rand::Rng;
+
+fn main() {
+    println!("Welcome to the Olympics Games of guessing!");
+
+    let secret = rand::thread_rng().gen_range(1, 200);
+
+    println!("The secret generated was: {}", secret);
+
+    println!("Provide your guess (integer numbers only):");
+
+    let mut guess = String::new();
+
+    io::stdin().read_line(&mut guess)
+        .expect("Failed to read line.");
+
+    let guess: u32 = guess.trim().parse()
+        .expect("I've told you to input integers only.");
+
+    println!("Your guess was: {}", guess);
+
+    match guess.cmp(&secret) {
+        Ordering::Less => println!("Guessed too small :("),
+        Ordering::Greater => println!("Guessed too big xD"),
+        Ordering::Equal => println!("Congrats, you win :D"),
+    }
+}
+```
+
+Here is another `use` statement, bringing a type called `std::cmp::Ordering` into scope from the standard library. Like `Result`, `Ordering` is another *enum*, but the variants for `Ordering` are `Less`, `Greater`, and `Equal`. These are the three outcomes that are possible when you compare two values.
+
+The `cmp` method compares two values and can be called on anything that can be compared. It takes a reference to whatever you want to compare with: here it’s comparing the `guess` to the `secret`. Then it returns a variant of the `Ordering` enum we brought into scope with the `use` statement. We use a `match` expression to decide what to do next based on which variant of `Ordering` was returned from the call to `cmp` with the values in `guess` and `secret`.
+
+A `match` expression is made up of *arms*. An *arm* consists of a pattern and the code that should be run if the value given to the beginning of the `match` expression fits that *arm’s* pattern. Rust takes the value given to match and looks through each *arm’s* pattern in turn. The `match` construct and patterns are powerful features in Rust that let you express a variety of situations your code might encounter and make sure that you handle them all. We will study more about this later.
+
+Rust has a strong, static type system. However, it also has type inference. When we wrote `let mut guess = String::new()`, Rust was able to infer that guess should be a `String` and didn’t make us write the type. The `secret`, on the other hand, is a number type. A few number types can have a value between 1 and 100: `i32`, a 32-bit number; `u32`, an unsigned 32-bit number; `i64`, a 64-bit number; as well as others. Rust defaults to an `i32`, which is the type of `secret` unless you add type information elsewhere that would cause Rust to infer a different numerical type. The reason for the error is that Rust cannot compare a string and a number type.
+
+Ultimately, we want to convert the `String` the program reads as input into a real number type so we can compare it numerically to the secret number. 
+
+We create a variable named `guess`. But wait, doesn’t the program already have a variable named `guess`? It does, but Rust allows us to *shadow* the previous value of `guess` with a new one. This feature is often used in situations in which you want to convert a value from one type to another type. *Shadowing* lets us reuse the guess variable name rather than forcing us to create two unique variables, such as `guess_str` and `guess` for example. 
+
+We bind `guess` to the expression `guess.trim().parse()`. The `guess` in the expression refers to the original `guess` that was a `String` with the input in it. The `trim` method on a `String` instance will eliminate any whitespace at the beginning and end. Although `u32` can contain only numerical characters, the user must press enter to satisfy `read_line`. When the user presses enter, a newline character is added to the string, the `trim` method eliminates `\n`.
+
+The `parse` method on strings parses a string into some kind of number. Because this method can parse a variety of number types, we need to tell Rust the exact number type we want by using `let guess: u32`. The colon (`:`) after `guess` tells Rust we’ll annotate the variable’s type. Rust has a few built-in number types; the `u32` seen here is an unsigned, 32-bit integer. It’s a good default choice for a small positive number. Additionally, the `u32` annotation in this example program and the comparison with `secret` means that Rust will infer that `secret` should be a `u32` as well. So now the comparison will be between two values of the same type!
+
+The call to `parse` could easily cause an error. If, for example, the string contained `A👍%`, there would be no way to convert that to a number. Because it might fail, the `parse` method returns a `Result` type, much as the `read_line` method does (if this is new to you, you must restart reading this from beginning). We’ll treat this `Result` the same way by using the `expect` method again. If `parse` returns an `Err` `Result` variant because it couldn’t create a number from the string, the `expect` call will crash the game and print the message we give it. If `parse` can successfully convert the string to a number, it will return the `Ok` variant of `Result`, and expect will return the number that we want from the `Ok` value.
+
+Run the program a few times to verify the different behavior with different kinds of input: guess the number correctly, guess a number that is too high, and guess a number that is too low.
+
+We have most of the game working now, but the user can make only one guess. Let’s change that by adding a loop!
+
+#### Allowing Multiple Guesses with Looping
+
+The `loop` keyword creates an infinite loop.
+
+```rust
+loop {
+        println!("Please input your guess.");
+
+        // --snip--
+
+        match guess.cmp(&secret_number) {
+            Ordering::Less => println!("Too small!"),
+            Ordering::Greater => println!("Too big!"),
+            Ordering::Equal => println!("You win!"),
+        }
+    }
+```
+
+Notice that the code avove is doing exactly what we told it to do: ask for another guess forever! It doesn’t seem like the user can quit!
+
+The user could always interrupt the program by using the keyboard shortcut `Ctrl`+`C`. But there’s another way to escape this insatiable monster, if the user enters a non-number answer, the program will crash.
+
+```rust
+match guess.cmp(&secret_number) {
+            Ordering::Less => println!("Too small!"),
+            Ordering::Greater => println!("Too big!"),
+            Ordering::Equal => {
+                println!("You win!");
+                break;
+            }
+    }
+```
+
+In the coding above, adding the `break` line after `You win!` makes the program exit the loop when the user guesses the secret number correctly. Exiting the loop also means exiting the program, because the loop is the last part of `main`.
+
+#### Handling invalid output
+
+To further refine the game’s behavior, rather than crashing the program when the user inputs a non-number, let’s make the game ignore a non-number so the user can continue guessing. The necessary change will looks like this:
+
+```rust
+let guess: u32 = match guess.trim().parse() {
+    Ok(num) => num,
+    Err(_) => continue,
+};
+```
+
+Switching from an `expect` call to a `match` expression is how you generally move from crashing on an error to handling the error. Remember that `parse` returns a `Result` type and `Result` is an enum that has the variants `Ok` or `Err`. We’re using a `match` expression here, as we did with the `Ordering` result of the `cmp` method.
+
+If `parse` is able to successfully turn the string into a number, it will return an `Ok` value that contains the resulting number. That `Ok` value will match the first *arm’s* pattern, and the match expression will just return the __num__ value that `parse` produced and put inside the `Ok` value. That number will end up right where we want it in the new `guess` variable we’re creating.
+
+If `parse` is not able to turn the string into a number, it will return an `Err` value that contains more information about the error. The `Err` value does not match the `Ok(num)` pattern in the first match *arm*, but it does match the `Err(_)` pattern in the second *arm*. The underscore, `_`, is a __catchall__ value; in this example, we’re saying we want to match all `Err` values, no matter what information they have inside them. So the program will execute the second *arm’s* code, __continue__, which tells the program to go to the next iteration of the `loop` and ask for another guess. So, effectively, the program ignores all errors that `parse` might encounter!
+
+#### The final result
+```rust
+use std::io;
+use std::cmp::Ordering;
+use rand::Rng;
+
+fn main() {
+    println!("Welcome to the Olympics Games of guessing!");
+
+    let secret = rand::thread_rng().gen_range(1, 200);
+
+    println!("I can tell you that the secret generated is a number between 1 and 199");
+
+    loop {
+        println!("\nProvide your guess (integer numbers only):");
+
+        let mut guess = String::new();
+
+        io::stdin().read_line(&mut guess)
+            .expect("Failed to read line.");
+
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+        println!("Your guess was: {}", guess);
+
+        match guess.cmp(&secret) {
+            Ordering::Less => println!("Guessed too small :("),
+            Ordering::Greater => println!("Guessed too big xD"),
+            Ordering::Equal => {
+                println!("Congrats, you win :D");
+                break;
+            }
+        }
+    }
+}
+```
+
+Congratulations for having gone so far, you've built a game in Rust from scratch. This project was a hands-on way to introduce you to many new Rust concepts: `let`, `match`, methods, associated functions, the use of external crates, and more. 
+
+## Basic stuff a programmer shoul be familiar with
 
 Soon!
