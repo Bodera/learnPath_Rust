@@ -1,6 +1,6 @@
 # The book
 
-This will be a document with several tons of lines, that's the intention since it records my learning progress through the language official documentation, available [here](https://doc.rust-lang.org/book/second-edition/index.html), and also the original source code [here](https://github.com/rust-lang/book/tree/master/second-edition/src). Let's check Rust flavor! (*Yuck*)
+This will be a document with several tons of lines, that's the intention since it records my learning progress through the language official documentation, available [here](https://doc.rust-lang.org/book/foreword.html), and also the original source code [here](https://github.com/rust-lang/book/tree/master/src). Let's check Rust flavor! (*does not sounds so tasty*)
 
 __Note__: The environment in which the code provided was tested is a Debian Linux machine.
 
