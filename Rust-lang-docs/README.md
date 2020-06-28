@@ -76,7 +76,7 @@ Open the *byeWorld* file and write:
 
 ```rust
 fn main() {
-	println!("Goodbye, World!");
+    println!("Goodbye, World!");
 }
 ```
 
@@ -266,7 +266,7 @@ To summarize, the `let mut guess = String::new();` line has created a mutable va
 The `io` module stores a lot of functions and `stdin()` is one of them. So becomes like this `io::stdin()`, but if we do not have explicit declared `use std::io`, we could simple call the `stdin()` function like that:
 
 ```rust
-std::io::stdin().read_line(&mut guess)
+io::stdin().read_line(&mut guess)
     .expect("Failed to read line");
 ```
 
@@ -276,7 +276,7 @@ And a layer below of the `stdin()` function we have the `read_line` __method__, 
 
 The job of `read_line` is to take whatever the user types into standard input and place that into a string, so it takes that string as an argument. The string argument needs to be mutable so the method can change the string’s content by adding the user input.
 
-The `&` indicates that the `&mut guess` argument is a reference, which gives you a way to let multiple parts of your code access one piece of data without needing to copy that data into memory multiple times. References are a complex feature, and one of Rust’s major advantages is how safe and easy it is to use references.
+The `&` indicates that the `&mut guess` argument is a reference, which gives you a way to let multiple parts of your code access one piece of data without needing to copy that data into memory multiple times. References are a complex feature, and one of Rust’s major advantages is how safe and easy it is to use references, a topic aborded in the next sections.
 
 Never forget that like variables, references are immutable by default.
 
@@ -379,7 +379,7 @@ $ cargo build
 
 Notice that when we have external dependencies Cargo fetches the latest version from a registry, which is a copy of data from [Crates.io](https://crates.io/), a Rust ecosystem place where people from all around the world post their open source Rust crates.
 
-To upate crates dependencies just run `cargo update` for minor patch updates, major patches will have to be explicitly declared in *Cargo.toml*. 
+To upate crates dependencies just run `cargo update` for minor patch updates, major patches will have to be explicitly declared in *Cargo.toml*.
 
 Before moving on, let's talk about the `Cargo.lock` file. When you build a project for the first time, Cargo figures out all the versions of the dependencies that fit the criteria and then writes them to the Cargo.lock file. When you build your project in the future, Cargo will see that the `Cargo.lock` file exists and use the versions specified there rather than doing all the work of figuring out versions again. This lets you have a reproducible build automatically.
 
@@ -407,7 +407,7 @@ fn main() {
 }
 ```
 
-The second line now has `use rand::Rng`, `Rng` trait defines methods that random number generators implement, and this trait must be in scope for us to use those methods. Trits are a language feature that tells the Rust compiler about functionality a type must provide, but we will study this more in the future.
+The second line now has `use rand::Rng`, `Rng` trait defines methods that random number generators implement, and this trait must be in scope for us to use those methods. Often used to define shared behavior in an abstract way, *traits* are a language feature that tells the Rust compiler about functionality a type must provide, but we will study this more in the future, each `crate` has a particular documentation that instructions how to use it.
 
 The `rand::thread_rng` function will give us the particular random number generator that we’re going to use: one that is local to the current thread of execution and seeded by the operating system. Then we call the `gen_range method` on the random number generator. This method is defined by the `Rng` trait that we brought into scope with the `use rand::Rng` statement. The `gen_range` method takes two numbers as arguments and generates a random number between them. It’s inclusive on the lower bound but exclusive on the upper bound, so we need to specify 1 and 200 to request a number between 1 and 199.
 
@@ -489,7 +489,7 @@ loop {
     }
 ```
 
-Notice that the code avove is doing exactly what we told it to do: ask for another guess forever! It doesn’t seem like the user can quit!
+Notice that the code avove is doing exactly what we told it to do: ask for another guess forever! It doesn’t seem like the user can quit.
 
 The user could always interrupt the program by using the keyboard shortcut `Ctrl`+`C`. But there’s another way to escape this insatiable monster, if the user enters a non-number answer, the program will crash.
 
@@ -560,7 +560,7 @@ fn main() {
                 break;
             }
         }
-    }
+    }estavamos
 }
 ```
 
@@ -568,4 +568,6 @@ Congratulations for having gone so far, you've built a game in Rust from scratch
 
 ## Fundamental topics review
 
-Soon!
+The goal of this section is to get familiar with the core of every programming language e.g.: variables, data typing, functions, comments, control flow. There is an appendix containing a curated list of reserved words in Rust, check it out clicking [here](https://doc.rust-lang.org/book/appendix-01-keywords.html).
+
+Let's start by recovering some Rust principles sawn when we were programming our guessing game.
